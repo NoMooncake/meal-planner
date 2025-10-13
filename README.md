@@ -196,4 +196,4 @@ mvn test
 ---
 
 ## License
-TBD (add your preferred license, e.g., MIT)
+TBD
