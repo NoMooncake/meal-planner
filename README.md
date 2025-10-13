@@ -110,7 +110,7 @@ java -cp target/meal-planner-0.1.0.jar com.example.mealplanner.App --days 2 --me
 
 ---
 
-## 🖥️ CLI Usage
+## CLI Usage
 
 ```
 Usage:
