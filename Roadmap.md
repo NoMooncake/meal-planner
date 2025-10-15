@@ -58,6 +58,11 @@ flowchart LR
 **Output / UX**
 - **PrettyPrinter** (group/sort/align/totals); exports: `--out csv|md`
 - CLI ergonomics: `--plan-only`, `--list-only`, `--dry-run`
+- **GUI (Swing MVP)**
+- A lightweight desktop UI that wraps existing services (no business logic duplication).
+- Inputs: days, meals (CSV), seed, pantry spec; Output: shopping list text area.
+- One-click run via IntelliJ or `mvn exec:java -Dexec.mainClass=...GuiApp`.
+
 
 **Engineering**
 - Runnable **fat‑jar** via Maven Shade; example run scripts
@@ -83,11 +88,14 @@ gantt
     Budget-aware + PriceBook    :        budg, 2025-10-27, 4d
     section Output
     PrettyPrinter + exports     :        out,  2025-10-31, 3d
+    section UI
+    Swing GUI MVP                 :        gui,  2025-11-03, 2d
+    GUI polish (optional)         :        guix, 2025-11-05, 1d
     section Engineering
-    Shade (fat-jar)             :        pkg,  2025-11-03, 1d
-    GitHub Actions CI           :        ci,   2025-11-04, 1d
-    Package JavaDocs            :        jdoc, 2025-11-05, 1d
-    README & polish             :        final,2025-11-06, 1d
+    Shade (fat-jar)             :        pkg,  2025-11-06, 1d
+    GitHub Actions CI           :        ci,   2025-11-07, 1d
+    Package JavaDocs            :        jdoc, 2025-11-08, 1d
+    README & polish             :        final,2025-11-09, 1d
 ```
 
 ---
