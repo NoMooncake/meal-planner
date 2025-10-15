@@ -32,13 +32,14 @@
 
 ```mermaid
 flowchart LR
-  A[CLI flags<br/>--days --meals --seed --pantry] --> B(RecipeCatalog)
-  B --> C{MealPlanStrategy<br/>RandomStrategy}
-  C --> D[MealPlan<br/>(day × meal slots)]
-  D --> E[ShoppingListBuilder<br/>aggregate by (name, unit)]
-  E --> F[Pantry<br/>subtract existing stock]
-  F --> G[ShoppingList (to buy)]
-  G --> H[Pretty print / export<br/>(final work)]
+    A[CLI flags] --> B[RecipeCatalog]
+    B --> C{MealPlanStrategy / Random}
+    C --> D[MealPlan]
+    D --> E[ShoppingListBuilder]
+    E --> F[Pantry]
+    F --> G[ShoppingList - to buy]
+    G --> H[Pretty print / export]
+
 ```
 
 ---
@@ -64,7 +65,7 @@ flowchart LR
 
 ---
 
-## 5) Milestones & Timeline (suggested)
+## 5) Milestones & Timeline
 
 > Adjust dates to your course calendar. Each block is sized so work is incremental and testable.
 
