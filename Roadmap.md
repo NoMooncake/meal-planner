@@ -78,9 +78,8 @@ flowchart LR
 gantt
     title Roadmap to Final
     dateFormat  YYYY-MM-DD
-    %% Update the start date to match your semester if needed
     section Core
-    JSON I/O (catalog/pantry)   :done,   io,   2025-10-14, 4d
+    JSON I/O (catalog/pantry)   :done,   io,   2025-10-10, 8d
     Unit converter (KG/G, L/ML) :active, conv, 2025-10-18, 4d
     Validation & CLI errors     :        vali, 2025-10-22, 2d
     section Strategies
