@@ -5,7 +5,7 @@
 
 ---
 
-## 1) Project Description (purpose, audience, service)
+## 1) Project Description
 
 **Purpose.** A small CLI application that plans meals for *N* days and produces an aggregated **shopping list**. It merges duplicate ingredients by **(name, unit)** and subtracts a user's **pantry** stock to output only the **items to buy**.
 
@@ -28,7 +28,7 @@
 
 ---
 
-## 3) Visual Outline (flow)
+## 3) Visual Outline
 
 ```mermaid
 flowchart LR
@@ -123,7 +123,7 @@ gantt
 
 ---
 
-## 8) Example Commands (quick reference)
+## 8) Example Commands
 
 ```
 # default: 2 days, lunch+dinner, seed=7
@@ -140,9 +140,9 @@ For more, see **README.md**.
 
 ---
 
-## 9) JSON Sketches (for upcoming persistence)
+## 9) JSON Sketches
 
-**RecipeCatalog (draft)**
+**RecipeCatalog**
 ```json
 {
   "recipes": [
@@ -158,7 +158,7 @@ For more, see **README.md**.
 }
 ```
 
-**Pantry (draft)**
+**Pantry**
 ```json
 {
   "stock": [
