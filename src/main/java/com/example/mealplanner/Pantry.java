@@ -80,7 +80,7 @@ public final class Pantry {
      *
      * @return an unmodifiable copy of the current key→amount map
      */
-    Map<String, Double> snapshot() {
+    public Map<String, Double> snapshot() {
         return Map.copyOf(stock);
     }
 }

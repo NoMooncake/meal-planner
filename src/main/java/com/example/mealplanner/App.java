@@ -49,6 +49,35 @@ public class App {
     public static void main(String[] args) {
         try {
             Config cfg = parseArgs(args);
+            // -- Load pantry from file (if any), then layer --pantry spec on top --
+            /*
+             * Loading order:
+             *   1) If --pantry-file is provided, load Pantry from JSON via PantryJson.fromFile.
+             *   2) If --pantry is also provided, overlay those entries on top of the loaded pantry
+             *      (i.e., add/override amounts for the same identity).
+             * Saving:
+             *   If --save-pantry is provided, serialize the in-memory pantry back to the given path.
+             */
+            final Pantry pantry;
+            if (cfg.pantryFileIn != null) {
+                try {
+                    pantry = com.example.mealplanner.io.PantryJson.fromFile(
+                            java.nio.file.Path.of(cfg.pantryFileIn));
+                } catch (Exception ioe) {
+                    throw new IllegalArgumentException("Failed to read pantry file: "
+                            + cfg.pantryFileIn + " (" + ioe.getMessage() + ")");
+                }
+            } else {
+                pantry = new Pantry();
+            }
+            if (cfg.pantry != null) {
+                cfg.pantry.snapshot().forEach((k, v) -> {
+                    int sep = k.lastIndexOf('|');
+                    String n = k.substring(0, sep);
+                    Unit u = Unit.valueOf(k.substring(sep + 1));
+                    pantry.add(n, v, u);
+                });
+            }
 
             // Catalog + Strategy
             var catalog = RecipeCatalog.samples();
@@ -57,10 +86,8 @@ public class App {
             // Build plan
             MealPlan plan = service.plan(cfg.days, cfg.meals);
 
-            // Build list (with/without pantry)
-            ShoppingList list = (cfg.pantry == null)
-                    ? new GroceryService().buildFrom(plan)
-                    : new GroceryService().buildFrom(plan, cfg.pantry);
+            // Optionally save pantry snapshot
+            ShoppingList list = new GroceryService().buildFrom(plan, pantry);
 
             // Nicely print
             System.out.println("== Shopping List ==");
@@ -68,6 +95,16 @@ public class App {
                     .sorted(Comparator.comparing(ShoppingListItem::name)
                             .thenComparing(i -> i.unit().name()))
                     .forEach(i -> System.out.println(i.name() + " " + i.totalAmount() + " " + i.unit()));
+
+            if (cfg.pantryFileOut != null) {
+                try {
+                    com.example.mealplanner.io.PantryJson.toFile(
+                            pantry, java.nio.file.Path.of(cfg.pantryFileOut));
+                } catch (Exception ioe) {
+                    throw new IllegalArgumentException("Failed to save pantry file: "
+                            + cfg.pantryFileOut + " (" + ioe.getMessage() + ")");
+                }
+            }
 
         } catch (IllegalArgumentException ex) {
             System.err.println("Error: " + ex.getMessage());
@@ -78,8 +115,13 @@ public class App {
 
     // ---- parsing ----
 
-    /** Immutable config holder produced by {@link #parseArgs(String[])}. */
-    private record Config(int days, MealType[] meals, long seed, Pantry pantry) {}
+    /** Immutable config holder produced by parseArgs. */
+    private record Config(int days,
+                          MealType[] meals,
+                          long seed,
+                          Pantry pantry,
+                          String pantryFileIn,
+                          String pantryFileOut) {}
 
     /**
      * Parses CLI arguments into a {@link Config}.
@@ -90,6 +132,9 @@ public class App {
      * @throws IllegalArgumentException if an option is unknown, missing its value, or has an invalid value
      */
     private static Config parseArgs(String[] args) {
+        String pantryFileIn = null;
+        String pantryFileOut = null;
+
         if (args == null) args = new String[0];
         if (Arrays.asList(args).contains("-h") || Arrays.asList(args).contains("--help")) {
             printHelp();
@@ -121,10 +166,18 @@ public class App {
                     ensureValue(args, i, a);
                     pantry = parsePantry(args[++i]);
                 }
+                case "--pantry-file" -> {
+                    ensureValue(args, i, a);
+                    pantryFileIn = args[++i];
+                }
+                case "--save-pantry" -> {
+                    ensureValue(args, i, a);
+                    pantryFileOut = args[++i];
+                }
                 default -> throw new IllegalArgumentException("Unknown option: " + a);
             }
         }
-        return new Config(days, meals, seed, pantry);
+        return new Config(days, meals, seed, pantry, pantryFileIn, pantryFileOut);
     }
 
     /**
@@ -224,6 +277,9 @@ public class App {
                   --pantry spec         Existing stock, comma-separated entries:
                                         name=amount:UNIT   (UNIT = PCS|G|ML)
                                         e.g. --pantry "milk=200:ML,egg=1:PCS"
+                  --pantry-file path    Load pantry JSON from file
+                  --save-pantry path    Save current pantry JSON to file
+                
                   -h, --help            Show this help
                 
                 Examples:
