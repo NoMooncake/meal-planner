@@ -59,16 +59,26 @@ public final class RecipeCatalogJson {
         if (dto != null && dto.recipes != null) {
             for (var r : dto.recipes) {
                 if (r == null) continue;
+                if (r.name == null || r.name.isBlank()) {
+                    throw new IllegalArgumentException("Recipe name must not be blank");
+                }
                 List<Ingredient> ings = new ArrayList<>();
                 if (r.ingredients != null) {
                     for (var ie : r.ingredients) {
                         if (ie == null) continue;
+                        if (ie.name == null || ie.name.isBlank()) {
+                            throw new IllegalArgumentException("Ingredient name must not be blank (recipe=" + r.name + ")");
+                        }
+                        if (!Double.isFinite(ie.amount) || ie.amount < 0) {
+                            throw new IllegalArgumentException("Ingredient amount must be finite and >= 0 (name=" + ie.name + ")");
+                        }
                         Unit u = Unit.valueOf(ie.unit.toUpperCase());
                         ings.add(Ingredient.of(ie.name, ie.amount, u));
                     }
                 }
                 recipes.add(new Recipe(r.name, ings));
             }
+
         }
         return new RecipeCatalog(recipes);
     }

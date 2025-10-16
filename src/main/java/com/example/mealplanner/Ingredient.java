@@ -69,8 +69,8 @@ public final class Ingredient {
         if (unit == null) {
             throw new IllegalArgumentException("unit must not be null");
         }
-        if (amount < 0) {
-            throw new IllegalArgumentException("amount must be >= 0");
+        if (!Double.isFinite(amount) || amount < 0) {
+            throw new IllegalArgumentException("amount must be finite and >= 0");
         }
         this.name = name.trim().toLowerCase(Locale.ROOT);
         this.amount = amount;
@@ -99,14 +99,15 @@ public final class Ingredient {
     public Unit unit() { return unit; }
 
     /**
-     * Returns a new {@link Ingredient} with the same identity (name, unit)
-     * but a different amount. Preserves immutability.
-     *
+     * Returns a new {@link Ingredient} with the same name and unit but a different amount.
      * @param newAmount non-negative amount
-     * @return new instance with {@code newAmount}
+     * @return a new {@link Ingredient} with the specified amount
      * @throws IllegalArgumentException if {@code newAmount < 0}
      */
     public Ingredient withAmount(double newAmount) {
+        if (!Double.isFinite(newAmount) || newAmount < 0) {
+            throw new IllegalArgumentException("amount must be finite and >= 0");
+        }
         return new Ingredient(this.name, newAmount, this.unit);
     }
 

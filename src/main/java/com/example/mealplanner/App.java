@@ -243,7 +243,7 @@ public class App {
     /**
      * Parses a pantry specification string into a {@link Pantry}.
      * <p>Format: comma-separated entries of {@code name=amount:UNIT}, where UNIT ∈ {PCS,G,ML}.</p>
-     * <p>Example: {@code "milk=200:ML,egg=1:PCS"}</p>
+     * <p>Example: {@code "milk=200:ML,egg=1:PCS"} or {@code "milk=0.5:L"}.</p>
      *
      * @param spec pantry spec string; may be blank/empty (treated as no stock)
      * @return a {@link Pantry} populated with the parsed entries
@@ -255,6 +255,8 @@ public class App {
 
         String[] entries = Arrays.stream(spec.split(","))
                 .map(String::trim).filter(s -> !s.isEmpty()).toArray(String[]::new);
+
+        Map<String, Units.Family> seenFamily = new HashMap<>();
 
         for (String e : entries) {
             String[] nv = e.split("=", 2);
@@ -273,6 +275,13 @@ public class App {
             try { unit = Unit.valueOf(au[1].trim().toUpperCase(Locale.ROOT)); }
             catch (IllegalArgumentException ex) {
                 throw new IllegalArgumentException("Bad unit: " + au[1] + " (use PCS|G|ML)");
+            }
+
+            Units.Family fam = Units.family(unit);
+            Units.Family prev = seenFamily.putIfAbsent(name.trim().toLowerCase(Locale.ROOT), fam);
+            if (prev != null && prev != fam) {
+                throw new IllegalArgumentException("Conflicting unit families for '" + name
+                        + "': saw " + prev + " and " + fam);
             }
 
             pantry.add(name, amount, unit);
