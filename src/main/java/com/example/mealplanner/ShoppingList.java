@@ -17,7 +17,13 @@ package com.example.mealplanner;
 import java.util.Collections;
 import java.util.List;
 
-/** Immutable container of aggregated items. */
+/**
+ * Immutable container of aggregated items.
+ *
+ * <p>Contains a list of {@link ShoppingListItem}.</p>
+ *
+ * @since 1.0
+ */
 public final class ShoppingList {
     private final List<ShoppingListItem> items;
 

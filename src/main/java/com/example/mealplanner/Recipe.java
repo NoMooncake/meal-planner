@@ -21,6 +21,8 @@ import java.util.Objects;
 
 /**
  * A simple recipe consisting of a name and a list of ingredients.
+ *
+ * @since 1.0
  */
 public final class Recipe {
     private final String name;

@@ -17,7 +17,16 @@ package com.example.mealplanner;
 import java.util.*;
 
 /**
- * Aggregates ingredients from multiple recipes into a shopping list.
+ * Builds a {@link ShoppingList} from a {@link MealPlan} by aggregating
+ * ingredients using the normalized identity (name, unit).
+ * <p>
+ * Notes:
+ * <ul>
+ *   <li>No unit conversion is performed in the MVP (e.g., G vs KG are distinct).</li>
+ *   <li>Names are normalized (lowercase + trim) before merging.</li>
+ * </ul>
+ * This class is the Builder pattern in the design.
+ * @since 1.0
  */
 public final class ShoppingListBuilder {
 

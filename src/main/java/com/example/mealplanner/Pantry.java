@@ -20,9 +20,12 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * Simple in-memory pantry (stock of ingredients).
- * - key: normalized "name|unit"
- * - amount: >= 0
+ * A simple in-memory pantry (stock of ingredients).
+ *
+ * <p>Ingredients are identified by (name, unit) pairs, where name is case/space-insensitive.
+ * The amount is a double value >= 0.</p>
+ *
+ * @since 1.0
  */
 public final class Pantry {
 

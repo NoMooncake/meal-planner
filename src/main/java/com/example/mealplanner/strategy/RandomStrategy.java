@@ -21,13 +21,61 @@ import java.util.List;
 import java.util.Random;
 import java.util.Objects;
 
+/**
+ * A {@link MealPlanStrategy} that fills each requested meal slot with a recipe
+ * chosen uniformly at random from the provided catalog.
+ *
+ * <p><b>Determinism for testing:</b> pass a {@link Random} with a fixed seed to the
+ * constructor so the same inputs produce the same {@link MealPlan}. The no-arg
+ * constructor uses a default {@code new Random()} and is therefore non-deterministic.</p>
+ *
+ * <p><b>Behavior:</b>
+ * <ul>
+ *   <li>Recipe reuse is allowed (the same recipe may appear multiple times).</li>
+ *   <li>Inputs are treated as read-only; the catalog is not modified.</li>
+ *   <li>The resulting plan contains exactly {@code days × mealsPerDay.length} slots,
+ *       preserving the order of {@code mealsPerDay} for each day.</li>
+ * </ul>
+ *
+ * <p>This class is a concrete Strategy in the Strategy pattern.</p>
+ *
+ * @since 1.0
+ */
 public class RandomStrategy implements MealPlanStrategy {
 
+    /** Source of randomness; may be seeded by clients for reproducible tests. */
     private final Random random;
 
-    public RandomStrategy() { this(new Random()); }
-    public RandomStrategy(Random random) { this.random = Objects.requireNonNull(random); }
+    /**
+     * Creates a non-deterministic strategy using {@code new Random()}.
+     * Prefer {@link #RandomStrategy(Random)} with a fixed seed in tests.
+     */
+    public RandomStrategy() {
+        this(new Random());
+    }
+    /**
+     * Creates a strategy that draws from the given {@link Random} instance.
+     * Supplying a seeded {@code Random} makes the strategy deterministic.
+     *
+     * @param random non-null random source
+     * @throws NullPointerException if {@code random} is {@code null}
+     */
+    public RandomStrategy(Random random) {
+        this.random = Objects.requireNonNull(random);
+    }
 
+    /**
+     * Generates a meal plan by randomly picking a recipe for every day/meal slot.
+     *
+     * @param days        number of days to plan; must be {@code > 0}
+     * @param mealsPerDay ordered array of {@link MealType} per day; must be non-empty
+     * @param catalog     candidate {@link Recipe} list; must be non-empty
+     * @return a {@link MealPlan} with {@code days × mealsPerDay.length} slots, in order
+     *
+     * @throws IllegalArgumentException if {@code days <= 0},
+     *                                  or {@code mealsPerDay} is null/empty,
+     *                                  or {@code catalog} is null/empty
+     */
     @Override
     public MealPlan generatePlan(int days, MealType[] mealsPerDay, List<Recipe> catalog) {
         if (catalog == null || catalog.isEmpty())

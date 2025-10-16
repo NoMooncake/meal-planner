@@ -16,6 +16,8 @@ package com.example.mealplanner;
 
 /**
  * Placeholder class for unit tests.
+ *
+ * @since 1.0
  */
 public enum Unit {
     PCS,   // pieces

@@ -20,6 +20,8 @@ import java.util.List;
 
 /**
  * A simple in-memory catalog of recipes.
+ *
+ * @since 1.0
  */
 public final class RecipeCatalog {
     private final List<Recipe> recipes;

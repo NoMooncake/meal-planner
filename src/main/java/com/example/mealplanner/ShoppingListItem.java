@@ -18,7 +18,10 @@ import java.util.Objects;
 
 /**
  * An aggregated line in the shopping list.
- * Identity == (name, unit), amount is the aggregated total.
+ *
+ * <p>Consists of a normalized ingredient name, a unit, and a total amount.</p>
+ *
+ * @since 1.0
  */
 public final class ShoppingListItem {
     private final String name; // already normalized (lowercase) by builder

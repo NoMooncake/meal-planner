@@ -105,7 +105,7 @@ mvn -q exec:java -Dexec.args="--days 2 --meals lunch,dinner --pantry milk=200:ML
 mvn -q -DskipTests package
 
 # run (regular jar; specify main class)
-java -cp target/meal-planner-0.1.0.jar com.example.mealplanner.App --days 2 --meals lunch,dinner
+java -cp target/meal-planner-*.jar com.example.mealplanner.App ...
 ```
 
 ---
@@ -193,7 +193,3 @@ mvn test
 - Java **21**, Maven, JUnit **5**
 - No external libs (fast to build/run; easy to grade)
 
----
-
-## License
-TBD

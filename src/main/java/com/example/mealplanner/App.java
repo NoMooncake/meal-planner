@@ -19,8 +19,33 @@ import com.example.mealplanner.strategy.RandomStrategy;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * Command-line entry point for the Meal Planner prototype.
+ *
+ * <p><strong>Service:</strong> plan meals → aggregate ingredients → subtract pantry → print the shopping list.</p>
+ *
+ * <p><strong>CLI flags</strong> (see also {@link #printHelp()}):</p>
+ * <ul>
+ *   <li>{@code --days N} — number of days (default: 2)</li>
+ *   <li>{@code --meals csv} — comma-separated meal types; allowed: breakfast,lunch,dinner (default: lunch,dinner)</li>
+ *   <li>{@code --seed N} — random seed for reproducible plans (default: 7)</li>
+ *   <li>{@code --pantry spec} — existing stock, e.g. {@code "milk=200:ML,egg=1:PCS"}</li>
+ * </ul>
+ *
+ * <p>This class wires the Facade/Service layer ({@link MealPlannerService}) with a concrete Strategy
+ * ({@link com.example.mealplanner.strategy.RandomStrategy}) and prints the final shopping list.</p>
+ *
+ * @since 1.0
+ */
 public class App {
 
+    /**
+     * Runs the CLI application. Parses arguments, builds the plan with the configured strategy,
+     * aggregates the shopping list (with optional pantry subtraction), and prints the result.
+     *
+     * @param args command-line arguments; see {@link #printHelp()} for supported options
+     * @throws IllegalArgumentException if required option values are missing/invalid
+     */
     public static void main(String[] args) {
         try {
             Config cfg = parseArgs(args);
@@ -53,8 +78,17 @@ public class App {
 
     // ---- parsing ----
 
+    /** Immutable config holder produced by {@link #parseArgs(String[])}. */
     private record Config(int days, MealType[] meals, long seed, Pantry pantry) {}
 
+    /**
+     * Parses CLI arguments into a {@link Config}.
+     * <p>Defaults: days=2, meals=lunch,dinner, seed=7, pantry=none.</p>
+     *
+     * @param args raw command-line args (may be {@code null})
+     * @return populated {@link Config}
+     * @throws IllegalArgumentException if an option is unknown, missing its value, or has an invalid value
+     */
     private static Config parseArgs(String[] args) {
         if (args == null) args = new String[0];
         if (Arrays.asList(args).contains("-h") || Arrays.asList(args).contains("--help")) {
@@ -93,11 +127,26 @@ public class App {
         return new Config(days, meals, seed, pantry);
     }
 
+    /**
+     * Ensures an option {@code opt} has a following value in {@code args}.
+     *
+     * @param args argv array
+     * @param i    current index of the option
+     * @param opt  option name for error message
+     * @throws IllegalArgumentException if the next value is missing
+     */
     private static void ensureValue(String[] args, int i, String opt) {
         if (i + 1 >= args.length) throw new IllegalArgumentException("Missing value for " + opt);
     }
 
-    /** e.g. "breakfast,lunch,dinner" */
+    /**
+     * Parses a comma-separated list of meal types into an array of {@link MealType}.
+     * Accepts case-insensitive tokens: {@code breakfast}, {@code lunch}, {@code dinner}.
+     *
+     * @param csv e.g. {@code "breakfast,lunch,dinner"}
+     * @return ordered {@link MealType} array
+     * @throws IllegalArgumentException if empty/blank or contains an unknown meal type
+     */
     private static MealType[] parseMeals(String csv) {
         if (csv == null || csv.isBlank()) throw new IllegalArgumentException("--meals must not be empty");
         String[] parts = Arrays.stream(csv.split(","))
@@ -120,8 +169,13 @@ public class App {
     }
 
     /**
-     * e.g. "milk=200:ML,egg=1:PCS"
-     * name=amount:UNIT (UNIT = PCS|G|ML)
+     * Parses a pantry specification string into a {@link Pantry}.
+     * <p>Format: comma-separated entries of {@code name=amount:UNIT}, where UNIT ∈ {PCS,G,ML}.</p>
+     * <p>Example: {@code "milk=200:ML,egg=1:PCS"}</p>
+     *
+     * @param spec pantry spec string; may be blank/empty (treated as no stock)
+     * @return a {@link Pantry} populated with the parsed entries
+     * @throws IllegalArgumentException if any entry has a bad shape, amount, or unit
      */
     private static Pantry parsePantry(String spec) {
         Pantry pantry = new Pantry();
@@ -154,6 +208,7 @@ public class App {
         return pantry;
     }
 
+    /** Prints CLI usage and examples. Safe to call at any time. */
     private static void printHelp() {
         System.out.println("""
                 Meal Planner CLI

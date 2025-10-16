@@ -18,21 +18,20 @@ import java.util.Locale;
 import java.util.Objects;
 
 /**
- * An immutable ingredient entry used by recipes and shopping lists.
+ * Immutable ingredient used across recipes and shopping lists.
  *
- * <p>Identity rule:</p>
+ * <p><b>Identity rule:</b> identity is the pair <code>(normalized name, unit)</code>.
+ * The {@code amount} is <em>not</em> part of identity so that multiple occurrences
+ * can be aggregated later. Name normalization = {@code trim().toLowerCase(Locale.ROOT)}.</p>
+ *
+ * <p><b>Validation:</b></p>
  * <ul>
- *   <li>Two ingredients are considered the <b>same identity</b> if their
- *       {@code name} (case/whitespace-insensitive) and {@link Unit} are equal.
- *       The {@code amount} is <b>NOT</b> part of identity, so we can combine amounts later.</li>
+ *   <li>name: non-null and non-blank (normalized on construction)</li>
+ *   <li>unit: non-null</li>
+ *   <li>amount: {@code >= 0}</li>
  * </ul>
  *
- * <p>Validation:</p>
- * <ul>
- *   <li>name: not null/blank</li>
- *   <li>unit: not null</li>
- *   <li>amount: must be &gt;= 0</li>
- * </ul>
+ * @since 1.0
  */
 public final class Ingredient {
 
@@ -41,12 +40,28 @@ public final class Ingredient {
     private final Unit unit;
 
     /**
-     * Factory method with basic validation.
+     * Static factory with validation that delegates to the canonical constructor.
+     *
+     * @param name   ingredient name (will be normalized; must not be blank)
+     * @param amount non-negative amount
+     * @param unit   measurement unit (non-null)
+     * @return an immutable {@link Ingredient}
+     * @throws IllegalArgumentException if {@code name} is null/blank or {@code amount < 0}
+     * @throws NullPointerException     if {@code unit} is null
      */
     public static Ingredient of(String name, double amount, Unit unit) {
         return new Ingredient(name, amount, unit);
     }
 
+    /**
+     * Creates an {@link Ingredient} with validation and name normalization.
+     *
+     * @param name   ingredient name (will be normalized; must not be blank)
+     * @param amount non-negative amount
+     * @param unit   measurement unit (non-null)
+     * @throws IllegalArgumentException if {@code name} is null/blank or {@code amount < 0}
+     * @throws NullPointerException     if {@code unit} is null
+     */
     public Ingredient(String name, double amount, Unit unit) {
         if (name == null || name.isBlank()) {
             throw new IllegalArgumentException("name must not be blank");
@@ -62,27 +77,50 @@ public final class Ingredient {
         this.unit = unit;
     }
 
-    /** Ingredient name (normalized to lowercase & trimmed). */
+    /**
+     * Returns the normalized ingredient name used for identity comparisons.
+     *
+     * @return lowercase & trimmed name
+     */
     public String name() { return name; }
 
-    /** Amount in the given unit. */
+    /**
+     * Returns the amount expressed in {@link #unit}.
+     *
+     * @return non-negative amount
+     */
     public double amount() { return amount; }
 
-    /** Measurement unit. */
+    /**
+     * Returns the measurement unit.
+     *
+     * @return non-null unit
+     */
     public Unit unit() { return unit; }
 
-    /** Returns a copy with a different amount (keeps immutability). */
+    /**
+     * Returns a new {@link Ingredient} with the same identity (name, unit)
+     * but a different amount. Preserves immutability.
+     *
+     * @param newAmount non-negative amount
+     * @return new instance with {@code newAmount}
+     * @throws IllegalArgumentException if {@code newAmount < 0}
+     */
     public Ingredient withAmount(double newAmount) {
         return new Ingredient(this.name, newAmount, this.unit);
     }
 
-    /** Identity is (name, unit). Amount is intentionally excluded for aggregation use-cases. */
+    /**
+     * Equality is based on <code>(name, unit)</code> only; {@code amount} is excluded.
+     * This enables downstream aggregation where amounts are summed.
+     */
     @Override public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Ingredient that)) return false;
         return name.equals(that.name) && unit == that.unit;
     }
 
+    /** Hash code derives from <code>(name, unit)</code> only. */
     @Override public int hashCode() {
         return Objects.hash(name, unit);
     }
