@@ -52,8 +52,12 @@ public final class Pantry {
         if (name == null || name.isBlank()) throw new IllegalArgumentException("name must not be blank");
         if (unit == null) throw new IllegalArgumentException("unit must not be null");
         if (amount < 0) throw new IllegalArgumentException("amount must be >= 0");
-        String key = normalize(name) + "|" + unit;
-        stock.merge(key, amount, Double::sum);
+
+        Unit cu = Units.canonical(unit);
+        double amt = Units.toCanonical(amount, unit);
+
+        String key = normalize(name) + "|" + cu;
+        stock.merge(key, amt, Double::sum);
         return this;
     }
 
@@ -66,7 +70,8 @@ public final class Pantry {
      * @throws NullPointerException if {@code name} or {@code unit} is {@code null}
      */
     public double amountOf(String name, Unit unit) {
-        String key = normalize(Objects.requireNonNull(name)) + "|" + Objects.requireNonNull(unit);
+        Unit cu = Units.canonical(unit);
+        String key = normalize(java.util.Objects.requireNonNull(name)) + "|" + cu;
         return stock.getOrDefault(key, 0.0);
     }
 

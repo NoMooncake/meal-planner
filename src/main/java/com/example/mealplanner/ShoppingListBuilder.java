@@ -49,9 +49,11 @@ public final class ShoppingListBuilder {
      */
     public ShoppingListBuilder addRecipe(Recipe recipe) {
         for (Ingredient ing : recipe.ingredients()) {
-            String key = ing.name() + "|" + ing.unit(); // normalize name to lowercase trimmed
-            totals.merge(key, ing.amount(), Double::sum);
-            units.putIfAbsent(key, ing.unit());
+            Unit cu = Units.canonical(ing.unit());
+            double amt = Units.toCanonical(ing.amount(), ing.unit());
+            String key = ing.name() + "|" + cu; // name 已在 Ingredient 内部小写化
+            totals.merge(key, amt, Double::sum);
+            units.putIfAbsent(key, cu);
         }
         return this;
     }

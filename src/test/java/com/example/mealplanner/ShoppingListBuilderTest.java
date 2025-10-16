@@ -60,4 +60,16 @@ public class ShoppingListBuilderTest {
         assertTrue(keys.contains("sugar|G"));
         assertTrue(keys.contains("sugar|ML"));
     }
+
+    @Test
+    void mergeDifferentUnits_mass() {
+        Recipe r1 = Recipe.of("A", Ingredient.of("pasta", 0.5, Unit.KG));
+        Recipe r2 = Recipe.of("B", Ingredient.of("pasta", 200, Unit.G));
+        ShoppingList list = new ShoppingListBuilder().addRecipe(r1).addRecipe(r2).build();
+        assertEquals(1, list.items().size());
+        var item = list.items().get(0);
+        assertEquals("pasta", item.name());
+        assertEquals(Unit.G, item.unit());
+        assertEquals(700.0, item.totalAmount(), 1e-9);
+    }
 }

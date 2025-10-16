@@ -75,4 +75,14 @@ public class PantrySubtractTest {
         assertEquals(Unit.G, item.unit());
         assertEquals(60.0, item.totalAmount(), 1e-9); // 100G - 40G
     }
+
+    @Test
+    void pantrySubtract_volumeConversion() {
+        Pantry p = new Pantry().add("milk", 1, Unit.L); // = 1000 ML
+        Recipe r = Recipe.of("Cereal", Ingredient.of("milk", 250, Unit.ML));
+        ShoppingList need = new GroceryService().buildFrom(new MealPlan(
+                java.util.List.of(new MealSlot(0, MealType.BREAKFAST, r))), p);
+        // 1000 - 250 = 750 ML left in pantry, no need to buy
+        assertTrue(need.items().isEmpty());
+    }
 }
