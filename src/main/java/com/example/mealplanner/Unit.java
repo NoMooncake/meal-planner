@@ -15,7 +15,17 @@
 package com.example.mealplanner;
 
 /**
- * Placeholder class for unit tests.
+ * Measurement units supported by the MVP.
+ *
+ * <p><b>Semantics:</b>
+ * <ul>
+ *   <li>No unit conversion is performed in the MVP; aggregation/subtraction require
+ *       exact unit matches (e.g., {@code G} and {@code KG} are distinct and will not merge).</li>
+ *   <li>Units appear in {@link Ingredient}, {@link ShoppingListItem}, and {@link Pantry} identities.</li>
+ * </ul>
+ *
+ * <p>Future work (optional): introduce a {@code UnitConverter} to normalize compatible units
+ * (e.g., KG↔G, L↔ML) before aggregation.</p>
  *
  * @since 1.0
  */
