@@ -71,17 +71,31 @@ public class App {
                 pantry = new Pantry();
             }
             if (cfg.pantry != null) {
-                cfg.pantry.snapshot().forEach((k, v) -> {
+                for (var e : cfg.pantry.snapshot().entrySet()) {
+                    String k = e.getKey();
+                    double v = e.getValue();
                     int sep = k.lastIndexOf('|');
                     String n = k.substring(0, sep);
                     Unit u = Unit.valueOf(k.substring(sep + 1));
                     pantry.add(n, v, u);
-                });
+                }
             }
 
             // Catalog + Strategy
-            var catalog = RecipeCatalog.samples();
-            var service = new MealPlannerService(catalog, new RandomStrategy(new Random(cfg.seed)));
+            final RecipeCatalog catalog;
+            if (cfg.catalogFileIn != null) {
+                try {
+                    catalog = com.example.mealplanner.io.RecipeCatalogJson.fromFile(
+                            java.nio.file.Path.of(cfg.catalogFileIn));
+                } catch (Exception ioe) {
+                    throw new IllegalArgumentException("Failed to read catalog file: "
+                            + cfg.catalogFileIn + " (" + ioe.getMessage() + ")");
+                }
+            } else {
+                catalog = RecipeCatalog.samples();
+            }
+
+            var service = new MealPlannerService(catalog, new RandomStrategy(new java.util.Random(cfg.seed)));
 
             // Build plan
             MealPlan plan = service.plan(cfg.days, cfg.meals);
@@ -121,7 +135,8 @@ public class App {
                           long seed,
                           Pantry pantry,
                           String pantryFileIn,
-                          String pantryFileOut) {}
+                          String pantryFileOut,
+                          String catalogFileIn) {}
 
     /**
      * Parses CLI arguments into a {@link Config}.
@@ -132,9 +147,6 @@ public class App {
      * @throws IllegalArgumentException if an option is unknown, missing its value, or has an invalid value
      */
     private static Config parseArgs(String[] args) {
-        String pantryFileIn = null;
-        String pantryFileOut = null;
-
         if (args == null) args = new String[0];
         if (Arrays.asList(args).contains("-h") || Arrays.asList(args).contains("--help")) {
             printHelp();
@@ -145,6 +157,9 @@ public class App {
         MealType[] meals = new MealType[]{ MealType.LUNCH, MealType.DINNER };
         long seed = 7L;
         Pantry pantry = null;
+        String pantryFileIn = null;
+        String pantryFileOut = null;
+        String catalogFileIn = null;
 
         for (int i = 0; i < args.length; i++) {
             String a = args[i];
@@ -174,10 +189,14 @@ public class App {
                     ensureValue(args, i, a);
                     pantryFileOut = args[++i];
                 }
+                case "--catalog-file" -> {
+                    ensureValue(args, i, a);
+                    catalogFileIn = args[++i];
+                }
                 default -> throw new IllegalArgumentException("Unknown option: " + a);
             }
         }
-        return new Config(days, meals, seed, pantry, pantryFileIn, pantryFileOut);
+        return new Config(days, meals, seed, pantry, pantryFileIn, pantryFileOut, catalogFileIn);
     }
 
     /**
@@ -279,6 +298,7 @@ public class App {
                                         e.g. --pantry "milk=200:ML,egg=1:PCS"
                   --pantry-file path    Load pantry JSON from file
                   --save-pantry path    Save current pantry JSON to file
+                  --catalog-file path   Load recipe catalog JSON from file
                 
                   -h, --help            Show this help
                 

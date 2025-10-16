@@ -124,13 +124,17 @@ Options:
   --pantry spec         Existing stock, comma-separated entries:
                         name=amount:UNIT (UNIT = PCS|G|ML)
                         Example: --pantry "milk=200:ML,egg=1:PCS"
+  --catalog-file path   Load recipe catalog JSON from file
+  --pantry-file path    Load pantry JSON from file (you already have)
+
   -h, --help            Show help
 ```
 
 Examples:
 ```bash
-mvn -q exec:java -Dexec.args="--days 3 --meals breakfast,dinner --seed 123"
-mvn -q exec:java -Dexec.args="--days 2 --meals lunch,dinner --pantry milk=200:ML,egg=1:PCS"
+.\mvnw.cmd exec:java --% -Dexec.args="--days 2 --meals lunch,dinner --pantry-file pantry.json"
+.\mvnw.cmd exec:java --% -Dexec.args="--days 3 --meals breakfast,lunch,dinner --catalog-file catalog.json --pantry-file pantry.json"
+./mvnw clean compile exec:java -Dexec.args="--days 3 --meals lunch,dinner --catalog-file catalog.json --pantry-file pantry.json"
 ```
 
 ---
