@@ -88,13 +88,13 @@ gantt
     section Output
     PrettyPrinter + exports     :done,  out,  2025-10-31, 3d
     section UI
-    Swing GUI MVP               :        gui,  2025-11-03, 2d
-    GUI polish (optional)       :        guix, 2025-11-05, 1d
+    Swing GUI MVP               :done,  gui,  2025-11-03, 2d
+    GUI polish (optional)       :done,  guix, 2025-11-05, 1d
     section Engineering
-    Shade (fat-jar)             :        pkg,  2025-11-06, 1d
-    GitHub Actions CI           :        ci,   2025-11-07, 1d
-    Package JavaDocs            :        jdoc, 2025-11-08, 1d
-    README & polish             :        final,2025-11-09, 1d
+    Shade (fat-jar)             :       pkg,  2025-11-06, 1d
+    GitHub Actions CI           :       ci,   2025-11-07, 1d
+    Package JavaDocs            :       jdoc, 2025-11-08, 1d
+    README & polish             :       final,2025-11-09, 1d
 ```
 
 ---
