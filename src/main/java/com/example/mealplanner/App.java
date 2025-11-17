@@ -7,17 +7,22 @@
  * <p>
  * Author: Yue Wu
  * Date: 2025/10/12
- * Version: 1.0
+ * Version: 1.1
  * -----------------------------------------------------------------------------
  */
 
-
 package com.example.mealplanner;
 
+import com.example.mealplanner.strategy.BudgetAwareStrategy;
+import com.example.mealplanner.strategy.MealPlanStrategy;
+import com.example.mealplanner.strategy.PantryFirstStrategy;
 import com.example.mealplanner.strategy.RandomStrategy;
 
 import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Comparator;
+import java.util.Locale;
+import java.io.IOException;
+
 
 /**
  * Command-line entry point for the Meal Planner prototype.
@@ -30,14 +35,25 @@ import java.util.stream.Collectors;
  *   <li>{@code --meals csv} — comma-separated meal types; allowed: breakfast,lunch,dinner (default: lunch,dinner)</li>
  *   <li>{@code --seed N} — random seed for reproducible plans (default: 7)</li>
  *   <li>{@code --pantry spec} — existing stock, e.g. {@code "milk=200:ML,egg=1:PCS"}</li>
+ *   <li>{@code --pantry-file path} — load pantry JSON from file</li>
+ *   <li>{@code --save-pantry path} — save pantry JSON after planning</li>
+ *   <li>{@code --catalog-file path} — load recipe catalog JSON from file</li>
+ *   <li>{@code --strategy kind} — {@code random | pantry-first | budget} (default: {@code random})</li>
+ *   <li>{@code --budget amount} — total budget for {@code budget} strategy</li>
  * </ul>
- *
- * <p>This class wires the Facade/Service layer ({@link MealPlannerService}) with a concrete Strategy
- * ({@link com.example.mealplanner.strategy.RandomStrategy}) and prints the final shopping list.</p>
  *
  * @since 1.0
  */
 public class App {
+
+    /**
+     * Available planning strategies for the CLI.
+     */
+    private enum StrategyKind {
+        RANDOM,
+        PANTRY_FIRST,
+        BUDGET
+    }
 
     /**
      * Runs the CLI application. Parses arguments, builds the plan with the configured strategy,
@@ -49,7 +65,10 @@ public class App {
     public static void main(String[] args) {
         try {
             Config cfg = parseArgs(args);
-            // -- Load pantry from file (if any), then layer --pantry spec on top --
+
+            // -----------------------------------------------------------------
+            // Load / overlay pantry (JSON file + inline spec)
+            // -----------------------------------------------------------------
             /*
              * Loading order:
              *   1) If --pantry-file is provided, load Pantry from JSON via PantryJson.fromFile.
@@ -70,6 +89,8 @@ public class App {
             } else {
                 pantry = new Pantry();
             }
+
+            // overlay inline --pantry spec, if any
             if (cfg.pantry != null) {
                 for (var e : cfg.pantry.snapshot().entrySet()) {
                     String k = e.getKey();
@@ -81,7 +102,9 @@ public class App {
                 }
             }
 
-            // Catalog + Strategy
+            // -----------------------------------------------------------------
+            // Load catalog (JSON or in-memory samples)
+            // -----------------------------------------------------------------
             final RecipeCatalog catalog;
             if (cfg.catalogFileIn != null) {
                 try {
@@ -95,21 +118,52 @@ public class App {
                 catalog = RecipeCatalog.samples();
             }
 
-            var service = new MealPlannerService(catalog, new RandomStrategy(new java.util.Random(cfg.seed)));
+            // -----------------------------------------------------------------
+            // Choose strategy: random / pantry-first / budget
+            // -----------------------------------------------------------------
+            MealPlanStrategy strategy;
+            Random rng = new Random(cfg.seed);
+
+            switch (cfg.strategyKind) {
+                case PANTRY_FIRST -> strategy = new PantryFirstStrategy(pantry, rng);
+                case BUDGET -> {
+                    if (cfg.budget == null) {
+                        throw new IllegalArgumentException(
+                                "--budget is required when --strategy budget is used");
+                    }
+                    PriceBook prices = PriceBook.samples();
+                    strategy = new BudgetAwareStrategy(prices, cfg.budget);
+                }
+                case RANDOM -> strategy = new RandomStrategy(rng);
+                default -> throw new IllegalStateException("Unknown strategy: " + cfg.strategyKind);
+            }
+
+
+            var service = new MealPlannerService(catalog, strategy);
 
             // Build plan
             MealPlan plan = service.plan(cfg.days, cfg.meals);
 
-            // Optionally save pantry snapshot
+            // Build shopping list with pantry subtraction
             ShoppingList list = new GroceryService().buildFrom(plan, pantry);
 
-            // Nicely print
-            System.out.println("== Shopping List ==");
-            list.items().stream()
-                    .sorted(Comparator.comparing(ShoppingListItem::name)
-                            .thenComparing(i -> i.unit().name()))
-                    .forEach(i -> System.out.println(i.name() + " " + i.totalAmount() + " " + i.unit()));
+            // Pretty print & optional CSV export
+            ShoppingListPrinter printer = new ShoppingListPrinter();
+            printer.printText(list, System.out);
 
+            if (cfg.csvOut != null) {
+                try {
+                    java.nio.file.Path csvPath = java.nio.file.Path.of(cfg.csvOut);
+                    printer.writeCsv(list, csvPath);
+                    System.out.println();
+                    System.out.println("[saved CSV to " + csvPath.toAbsolutePath() + "]");
+                } catch (IOException ioe) {
+                    throw new IllegalArgumentException(
+                            "Failed to write CSV file: " + cfg.csvOut + " (" + ioe.getMessage() + ")");
+                }
+            }
+
+            // Optionally save pantry snapshot
             if (cfg.pantryFileOut != null) {
                 try {
                     com.example.mealplanner.io.PantryJson.toFile(
@@ -129,18 +183,23 @@ public class App {
 
     // ---- parsing ----
 
-    /** Immutable config holder produced by parseArgs. */
+    /**
+     * Immutable config holder produced by {@link #parseArgs(String[])}.
+     */
     private record Config(int days,
                           MealType[] meals,
                           long seed,
                           Pantry pantry,
                           String pantryFileIn,
                           String pantryFileOut,
-                          String catalogFileIn) {}
+                          String catalogFileIn,
+                          StrategyKind strategyKind,
+                          Double budget,
+                          String csvOut) {}
 
     /**
      * Parses CLI arguments into a {@link Config}.
-     * <p>Defaults: days=2, meals=lunch,dinner, seed=7, pantry=none.</p>
+     * <p>Defaults: days=2, meals=lunch,dinner, seed=7, strategy=random, no budget.</p>
      *
      * @param args raw command-line args (may be {@code null})
      * @return populated {@link Config}
@@ -160,6 +219,9 @@ public class App {
         String pantryFileIn = null;
         String pantryFileOut = null;
         String catalogFileIn = null;
+        StrategyKind strategyKind = StrategyKind.RANDOM;
+        Double budget = null;
+        String csvOut = null;
 
         for (int i = 0; i < args.length; i++) {
             String a = args[i];
@@ -193,10 +255,33 @@ public class App {
                     ensureValue(args, i, a);
                     catalogFileIn = args[++i];
                 }
+                case "--strategy" -> {
+                    ensureValue(args, i, a);
+                    String s = args[++i].toLowerCase(Locale.ROOT);
+                    switch (s) {
+                        case "random" -> strategyKind = StrategyKind.RANDOM;
+                        case "pantry-first", "pantry_first", "pantryfirst" ->
+                                strategyKind = StrategyKind.PANTRY_FIRST;
+                        case "budget" -> strategyKind = StrategyKind.BUDGET;
+                        default -> throw new IllegalArgumentException(
+                                "Unknown strategy: " + s + " (use random|pantry-first|budget)");
+                    }
+                }
+                case "--csv-out" -> {
+                    ensureValue(args, i, a);
+                    csvOut = args[++i];
+                }
+                case "--budget" -> {
+                    ensureValue(args, i, a);
+                    double b = Double.parseDouble(args[++i]);
+                    if (b <= 0) throw new IllegalArgumentException("--budget must be > 0");
+                    budget = b;
+                }
                 default -> throw new IllegalArgumentException("Unknown option: " + a);
             }
         }
-        return new Config(days, meals, seed, pantry, pantryFileIn, pantryFileOut, catalogFileIn);
+        return new Config(days, meals, seed, pantry, pantryFileIn, pantryFileOut,
+                catalogFileIn, strategyKind, budget, csvOut);
     }
 
     /**
@@ -243,7 +328,7 @@ public class App {
     /**
      * Parses a pantry specification string into a {@link Pantry}.
      * <p>Format: comma-separated entries of {@code name=amount:UNIT}, where UNIT ∈ {PCS,G,ML}.</p>
-     * <p>Example: {@code "milk=200:ML,egg=1:PCS"} or {@code "milk=0.5:L"}.</p>
+     * <p>Example: {@code "milk=200:ML,egg=1:PCS"}</p>
      *
      * @param spec pantry spec string; may be blank/empty (treated as no stock)
      * @return a {@link Pantry} populated with the parsed entries
@@ -255,8 +340,6 @@ public class App {
 
         String[] entries = Arrays.stream(spec.split(","))
                 .map(String::trim).filter(s -> !s.isEmpty()).toArray(String[]::new);
-
-        Map<String, Units.Family> seenFamily = new HashMap<>();
 
         for (String e : entries) {
             String[] nv = e.split("=", 2);
@@ -277,13 +360,6 @@ public class App {
                 throw new IllegalArgumentException("Bad unit: " + au[1] + " (use PCS|G|ML)");
             }
 
-            Units.Family fam = Units.family(unit);
-            Units.Family prev = seenFamily.putIfAbsent(name.trim().toLowerCase(Locale.ROOT), fam);
-            if (prev != null && prev != fam) {
-                throw new IllegalArgumentException("Conflicting unit families for '" + name
-                        + "': saw " + prev + " and " + fam);
-            }
-
             pantry.add(name, amount, unit);
         }
         return pantry;
@@ -293,30 +369,43 @@ public class App {
     private static void printHelp() {
         System.out.println("""
                 Meal Planner CLI
-                
+
                 Usage:
                   java -cp target/meal-planner-0.1.0.jar com.example.mealplanner.App [options]
-                
+
                 Options:
                   --days N              Number of days (default: 2)
                   --meals csv           Comma-separated meals (default: lunch,dinner)
                                         Allowed: breakfast,lunch,dinner
                   --seed N              Random seed for reproducible plans (default: 7)
+
                   --pantry spec         Existing stock, comma-separated entries:
                                         name=amount:UNIT   (UNIT = PCS|G|ML)
                                         e.g. --pantry "milk=200:ML,egg=1:PCS"
                   --pantry-file path    Load pantry JSON from file
                   --save-pantry path    Save current pantry JSON to file
+
                   --catalog-file path   Load recipe catalog JSON from file
+
+                  --strategy kind       Planning strategy:
+                                          random        (default)
+                                          pantry-first  (prefer recipes using pantry items)
+                                          budget        (respect total --budget)
+                  --budget amount       Total budget used by 'budget' strategy
+                  --csv-out path         Also export shopping list as CSV to the given path
                 
+
                   -h, --help            Show this help
-                
+
                 Examples:
                   # 3 days, breakfast & dinner, fixed seed
                   mvn -q exec:java -Dexec.args="--days 3 --meals breakfast,dinner --seed 42"
-                
-                  # With pantry deducting existing stock
-                  mvn -q exec:java -Dexec.args="--days 2 --meals lunch,dinner --pantry milk=200:ML,egg=1:PCS"
+
+                  # Pantry-first strategy with inline pantry
+                  mvn -q exec:java -Dexec.args="--days 2 --meals lunch --strategy pantry-first --pantry milk=200:ML,egg=1:PCS"
+
+                  # Budget-aware strategy with total budget 50.0
+                  mvn -q exec:java -Dexec.args="--days 3 --meals lunch,dinner --strategy budget --budget 50.0"
                 """);
     }
 }

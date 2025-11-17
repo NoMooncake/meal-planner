@@ -3,21 +3,20 @@
 > A small Java 21 + Maven CLI app that plans meals and generates an aggregated grocery list.  
 > It demonstrates clean domain modeling, **Strategy** (planning) and **Builder** (aggregation), with JUnit 5 tests.
 
-## Features (MVP+Core)
-- **Plan meals** for _N_ days with **custom meal types**: `BREAKFAST`, `LUNCH`, `DINNER`
-- **Aggregate ingredients** → **Shopping List**  
-  (merge by **(normalized name, unit)**; names are case/whitespace-insensitive)
-- **Pantry subtraction** to show **what to buy**
-- **JSON I/O**
-    - `--catalog-file` to load recipes from JSON
-    - `--pantry-file` to load pantry from JSON; `--save-pantry` to write back
-- **Unit conversion** (canonicalization)
-    - MASS: `KG ↔ G` (stored/printed as **G**)
-    - VOLUME: `L ↔ ML` (stored/printed as **ML**)
-    - COUNT: `PCS`
-- **Validation**: friendly errors for empty names, bad units, negative/NaN amounts, conflicting unit families
-- **CLI** flags: `--days`, `--meals`, `--seed`, `--pantry`, `--catalog-file`, `--pantry-file`, `--save-pantry`
-- **Deterministic testing** via injectable random seed
+## Features
+### Core
+- Plan meals for **N days** using meals: `BREAKFAST`, `LUNCH`, `DINNER`
+- Aggregate ingredients across recipes (merge by **normalized (name, unit)**)
+- Subtract pantry stock to produce **remaining items to buy**
+- Deterministic randomness via `--seed`
+- JSON I/O:
+    - `--catalog-file` (load recipes)
+    - `--pantry-file` / `--save-pantry` (load/save pantry)
+
+### Strategy Pattern (Pluggable)
+- `random` — default (same as earlier MVP)
+- `pantry-first` — prefers recipes that consume existing pantry items
+- `budget` — picks meals within a given cost using a `PriceBook`
 
 ---
 
@@ -63,6 +62,8 @@ com.example.mealplanner
 ├─ Pantry                   # existing stock (stored in canonical units)
 ├─ GroceryService           # build list (with/without pantry)
 ├─ MealPlannerService       # facade/service
+├─ RecipeCatalog            # in-memory or JSON-loaded catalog
+├─ PriceBook                # for BudgetAwareStrategy
 ├─ io/
 │  ├─ PantryJson            # Pantry JSON load/save
 │  ├─ PantryDto             # Pantry JSON DTO
@@ -70,7 +71,9 @@ com.example.mealplanner
 │  └─ RecipeCatalogDto      # Catalog JSON DTO
 └─ strategy/
    ├─ MealPlanStrategy      # Strategy interface
-   └─ RandomStrategy        # simple random picker
+   ├─ RandomStrategy        # simple random picker
+   ├─ PantryFirstStrategy   # prefers recipes using pantry stock
+   └─ BudgetAwareStrategy   # limits total cost (with PriceBook)
 ```
 
 ---

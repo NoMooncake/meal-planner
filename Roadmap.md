@@ -79,17 +79,17 @@ gantt
     title Roadmap to Final
     dateFormat  YYYY-MM-DD
     section Core
-    JSON I/O (catalog/pantry)   :done,   io,   2025-10-10, 8d
-    Unit converter (KG/G, L/ML) :done, conv, 2025-10-18, 4d
-    Validation & CLI errors     :done, vali, 2025-10-22, 2d
+    JSON I/O (catalog/pantry)   :done,  io,   2025-10-10, 8d
+    Unit converter (KG/G, L/ML) :done,  conv, 2025-10-18, 4d
+    Validation & CLI errors     :done,  vali, 2025-10-22, 2d
     section Strategies
-    Pantry-First strategy       :        pf,   2025-10-24, 3d
-    Budget-aware + PriceBook    :        budg, 2025-10-27, 4d
+    Pantry-First strategy       :done,  pf,   2025-10-24, 3d
+    Budget-aware + PriceBook    :done,  budg, 2025-10-27, 4d
     section Output
-    PrettyPrinter + exports     :        out,  2025-10-31, 3d
+    PrettyPrinter + exports     :done,  out,  2025-10-31, 3d
     section UI
-    Swing GUI MVP                 :        gui,  2025-11-03, 2d
-    GUI polish (optional)         :        guix, 2025-11-05, 1d
+    Swing GUI MVP               :        gui,  2025-11-03, 2d
+    GUI polish (optional)       :        guix, 2025-11-05, 1d
     section Engineering
     Shade (fat-jar)             :        pkg,  2025-11-06, 1d
     GitHub Actions CI           :        ci,   2025-11-07, 1d
