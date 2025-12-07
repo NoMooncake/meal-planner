@@ -63,15 +63,15 @@ public final class MealPlannerGui {
 
         // Row 1: Meals (checkboxes)
         JCheckBox breakfastCheck = new JCheckBox("Breakfast");
-        JCheckBox lunchCheck = new JCheckBox("Lunch", true);      // 默认勾选
-        JCheckBox dinnerCheck = new JCheckBox("Dinner", true);    // 默认勾选
+        JCheckBox lunchCheck = new JCheckBox("Lunch", true); 
+        JCheckBox dinnerCheck = new JCheckBox("Dinner", true);
         JPanel mealsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
         mealsPanel.add(breakfastCheck);
         mealsPanel.add(lunchCheck);
         mealsPanel.add(dinnerCheck);
         c.gridx = 0; c.gridy = 1; controls.add(new JLabel("Meals:"), c);
         c.gridx = 1; c.gridwidth = 2; controls.add(mealsPanel, c);
-        c.gridwidth = 1; // 重置
+        c.gridwidth = 1; // reset
 
         // Row 2: Seed
         JTextField seedField = new JTextField("7", 10);
@@ -111,14 +111,14 @@ public final class MealPlannerGui {
         c.gridx = 1; controls.add(pantryLabel, c);
 
         // Row 8: Generate button
-        JButton generateBtn = new JButton("🍽️ Generate Shopping List");
+        JButton generateBtn = new JButton("Generate Shopping List");
         generateBtn.setFont(generateBtn.getFont().deriveFont(Font.BOLD, 14f));
         c.gridx = 0; c.gridy = 8; c.gridwidth = 2;
         c.insets = new Insets(15, 4, 4, 4);
         controls.add(generateBtn, c);
 
         // Row 9: Export CSV button
-        JButton exportCsvBtn = new JButton("📁 Export to list.csv");
+        JButton exportCsvBtn = new JButton("Export to list.csv");
         c.gridx = 0; c.gridy = 9; c.gridwidth = 2;
         c.insets = new Insets(4, 4, 4, 4);
         controls.add(exportCsvBtn, c);
@@ -259,6 +259,20 @@ public final class MealPlannerGui {
                 ps.flush();
                 sb.append(baos);
 
+                // Calculate total cost
+                PriceBook prices = PriceBook.samples();
+                double totalCost = 0.0;
+                for (ShoppingListItem item : list.items()) {
+                    double unitPrice = prices.unitPrice(item.name(), item.unit());
+                    if (!Double.isNaN(unitPrice)) {
+                        totalCost += unitPrice * item.totalAmount();
+                    }
+                }
+                sb.append("\n");
+                sb.append("========================================\n");
+                sb.append(String.format("Estimated Total Cost: $%.2f%n", totalCost));
+                sb.append("========================================\n");
+
                 outputArea.setText(sb.toString());
                 outputArea.setCaretPosition(0);
                 statusBar.setText("Generated plan for " + days + " days, " + meals.length + " meals/day using " + strategyName);
@@ -280,10 +294,48 @@ public final class MealPlannerGui {
             }
             try {
                 Path csvPath = Path.of("list.csv");
-                new ShoppingListPrinter().writeCsv(lastList[0], csvPath);
-                statusBar.setText("Exported to list.csv");
-                JOptionPane.showMessageDialog(frame, 
-                        "Shopping list saved to:\n" + csvPath.toAbsolutePath(),
+                PriceBook prices = PriceBook.samples();
+                double totalCost = 0.0;
+
+                try (java.io.BufferedWriter w = java.nio.file.Files.newBufferedWriter(
+                        csvPath, java.nio.charset.StandardCharsets.UTF_8)) {
+                    // Header with price columns
+                    w.write("name,amount,unit,unit_price,subtotal");
+                    w.newLine();
+
+                    for (ShoppingListItem item : lastList[0].items()) {
+                        double unitPrice = prices.unitPrice(item.name(), item.unit());
+                        double subtotal = 0.0;
+                        String unitPriceStr = "";
+                        String subtotalStr = "";
+
+                        if (!Double.isNaN(unitPrice)) {
+                            subtotal = unitPrice * item.totalAmount();
+                            totalCost += subtotal;
+                            unitPriceStr = String.format("%.4f", unitPrice);
+                            subtotalStr = String.format("%.2f", subtotal);
+                        }
+
+                        w.write(item.name());
+                        w.write(',');
+                        w.write(Double.toString(item.totalAmount()));
+                        w.write(',');
+                        w.write(item.unit().name());
+                        w.write(',');
+                        w.write(unitPriceStr);
+                        w.write(',');
+                        w.write(subtotalStr);
+                        w.newLine();
+                    }
+
+                    // Total row
+                    w.write("TOTAL,,,," + String.format("%.2f", totalCost));
+                    w.newLine();
+                }
+
+                statusBar.setText("Exported to list.csv (Total: $" + String.format("%.2f", totalCost) + ")");
+                JOptionPane.showMessageDialog(frame,
+                        "Shopping list saved to:\n" + csvPath.toAbsolutePath() + "\n\nTotal Cost: $" + String.format("%.2f", totalCost),
                         "Export Successful", JOptionPane.INFORMATION_MESSAGE);
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(frame, "Failed to export CSV:\n" + ex.getMessage(),
