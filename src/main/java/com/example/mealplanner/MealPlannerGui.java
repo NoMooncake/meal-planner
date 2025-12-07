@@ -7,7 +7,7 @@
  * <p>
  * Author: Yue Wu
  * Date: 2025/11/17
- * Version: 1.0
+ * Version: 2.0
  * -----------------------------------------------------------------------------
  */
 package com.example.mealplanner;
