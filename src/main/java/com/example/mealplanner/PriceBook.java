@@ -102,20 +102,53 @@ public final class PriceBook {
     }
 
     /**
-     * Sample price book roughly matching {@link RecipeCatalog#samples()}.
+     * Sample price book matching catalog.json ingredients.
      *
      * <p>Numbers are purely illustrative and not meant to be realistic.</p>
      */
     public static PriceBook samples() {
         PriceBook pb = new PriceBook();
-        pb.add("Egg",       Unit.PCS, 0.30);
-        pb.add("Milk",      Unit.ML,  0.002);   // 2 per liter
-        pb.add("Pasta",     Unit.G,   0.015);
-        pb.add("Chicken",   Unit.G,   0.020);
-        pb.add("Lettuce",   Unit.G,   0.010);
-        pb.add("Olive Oil", Unit.ML,  0.050);
-        pb.add("Rice",      Unit.G,   0.012);
-        pb.add("Oil",       Unit.ML,  0.030);
+        
+        // Proteins
+        pb.add("egg",           Unit.PCS, 0.30);
+        pb.add("chicken",       Unit.G,   0.020);
+        pb.add("pork",          Unit.G,   0.018);
+        pb.add("shrimp",        Unit.G,   0.045);
+        pb.add("tofu",          Unit.G,   0.008);
+        
+        // Dairy
+        pb.add("milk",          Unit.ML,  0.002);
+        
+        // Grains & Starches
+        pb.add("rice",          Unit.G,   0.005);
+        pb.add("pasta",         Unit.G,   0.012);
+        pb.add("noodles",       Unit.G,   0.010);
+        pb.add("cornstarch",    Unit.G,   0.006);
+        pb.add("sugar",         Unit.G,   0.004);
+        
+        // Vegetables
+        pb.add("lettuce",       Unit.G,   0.010);
+        pb.add("broccoli",      Unit.G,   0.008);
+        pb.add("bell pepper",   Unit.G,   0.012);
+        pb.add("carrot",        Unit.G,   0.005);
+        pb.add("onion",         Unit.G,   0.004);
+        pb.add("bok choy",      Unit.G,   0.007);
+        pb.add("garlic",        Unit.G,   0.015);
+        pb.add("ginger",        Unit.G,   0.020);
+        pb.add("scallion",      Unit.PCS, 0.25);
+        
+        // Oils & Sauces
+        pb.add("oil",           Unit.ML,  0.008);
+        pb.add("olive oil",     Unit.ML,  0.025);
+        pb.add("sesame oil",    Unit.ML,  0.030);
+        pb.add("chili oil",     Unit.ML,  0.035);
+        pb.add("soy sauce",     Unit.ML,  0.010);
+        pb.add("sriracha",      Unit.ML,  0.015);
+        pb.add("rice vinegar",  Unit.ML,  0.012);
+        
+        // Seasonings
+        pb.add("sesame seeds",  Unit.G,   0.025);
+        
         return pb;
     }
 }

@@ -1,33 +1,163 @@
 {
   "recipes": [
     {
-      "name": "Eggs",
+      "name": "Scrambled Eggs",
       "ingredients": [
         { "name": "egg",  "amount": 2,   "unit": "PCS" },
-        { "name": "milk", "amount": 50,  "unit": "ML"  }
+        { "name": "milk", "amount": 50,  "unit": "ML"  },
+        { "name": "oil",  "amount": 5,   "unit": "ML"  }
       ]
     },
     {
       "name": "Pasta",
       "ingredients": [
-        { "name": "pasta", "amount": 100, "unit": "G"  },
-        { "name": "milk",  "amount": 100, "unit": "ML" }
+        { "name": "pasta",      "amount": 100, "unit": "G"  },
+        { "name": "milk",       "amount": 100, "unit": "ML" },
+        { "name": "olive oil",  "amount": 10,  "unit": "ML" }
       ]
     },
     {
       "name": "Chicken Salad",
       "ingredients": [
-        { "name": "chicken",   "amount": 150, "unit": "G"  },
-        { "name": "lettuce",   "amount": 100, "unit": "G"  },
-        { "name": "olive oil", "amount": 10,  "unit": "ML" }
+        { "name": "chicken",    "amount": 150, "unit": "G"  },
+        { "name": "lettuce",    "amount": 100, "unit": "G"  },
+        { "name": "olive oil",  "amount": 10,  "unit": "ML" }
       ]
     },
     {
       "name": "Fried Rice",
       "ingredients": [
-        { "name": "rice", "amount": 150, "unit": "G"  },
-        { "name": "egg",  "amount": 1,   "unit": "PCS" },
-        { "name": "oil",  "amount": 10,  "unit": "ML" }
+        { "name": "rice",       "amount": 150, "unit": "G"  },
+        { "name": "egg",        "amount": 1,   "unit": "PCS" },
+        { "name": "oil",        "amount": 10,  "unit": "ML" },
+        { "name": "scallion",   "amount": 1,   "unit": "PCS" },
+        { "name": "soy sauce",  "amount": 15,  "unit": "ML" }
+      ]
+    },
+    {
+      "name": "Stir-Fry Chicken",
+      "ingredients": [
+        { "name": "chicken",    "amount": 200, "unit": "G"  },
+        { "name": "broccoli",   "amount": 100, "unit": "G"  },
+        { "name": "garlic",     "amount": 10,  "unit": "G"  },
+        { "name": "soy sauce",  "amount": 20,  "unit": "ML" },
+        { "name": "oil",        "amount": 15,  "unit": "ML" },
+        { "name": "cornstarch", "amount": 10,  "unit": "G"  }
+      ]
+    },
+    {
+      "name": "Garlic Shrimp",
+      "ingredients": [
+        { "name": "shrimp",     "amount": 150, "unit": "G"  },
+        { "name": "garlic",     "amount": 15,  "unit": "G"  },
+        { "name": "oil",        "amount": 20,  "unit": "ML" },
+        { "name": "soy sauce",  "amount": 10,  "unit": "ML" },
+        { "name": "scallion",   "amount": 1,   "unit": "PCS" }
+      ]
+    },
+    {
+      "name": "Mapo Tofu",
+      "ingredients": [
+        { "name": "tofu",       "amount": 200, "unit": "G"  },
+        { "name": "pork",       "amount": 100, "unit": "G"  },
+        { "name": "chili oil",  "amount": 15,  "unit": "ML" },
+        { "name": "soy sauce",  "amount": 20,  "unit": "ML" },
+        { "name": "garlic",     "amount": 10,  "unit": "G"  },
+        { "name": "scallion",   "amount": 1,   "unit": "PCS" }
+      ]
+    },
+    {
+      "name": "Veggie Stir Fry",
+      "ingredients": [
+        { "name": "broccoli",   "amount": 100, "unit": "G"  },
+        { "name": "bell pepper","amount": 80,  "unit": "G"  },
+        { "name": "carrot",     "amount": 60,  "unit": "G"  },
+        { "name": "garlic",     "amount": 8,   "unit": "G"  },
+        { "name": "soy sauce",  "amount": 15,  "unit": "ML" },
+        { "name": "sesame oil", "amount": 5,   "unit": "ML" }
+      ]
+    },
+    {
+      "name": "Ginger Pork",
+      "ingredients": [
+        { "name": "pork",       "amount": 200, "unit": "G"  },
+        { "name": "ginger",     "amount": 20,  "unit": "G"  },
+        { "name": "onion",      "amount": 80,  "unit": "G"  },
+        { "name": "soy sauce",  "amount": 25,  "unit": "ML" },
+        { "name": "oil",        "amount": 15,  "unit": "ML" }
+      ]
+    },
+    {
+      "name": "Noodle Soup",
+      "ingredients": [
+        { "name": "noodles",    "amount": 100, "unit": "G"  },
+        { "name": "chicken",    "amount": 80,  "unit": "G"  },
+        { "name": "bok choy",   "amount": 80,  "unit": "G"  },
+        { "name": "scallion",   "amount": 1,   "unit": "PCS" },
+        { "name": "soy sauce",  "amount": 15,  "unit": "ML" },
+        { "name": "sesame oil", "amount": 5,   "unit": "ML" }
+      ]
+    },
+    {
+      "name": "Egg Drop Soup",
+      "ingredients": [
+        { "name": "egg",        "amount": 2,   "unit": "PCS" },
+        { "name": "scallion",   "amount": 1,   "unit": "PCS" },
+        { "name": "cornstarch", "amount": 10,  "unit": "G"  },
+        { "name": "sesame oil", "amount": 5,   "unit": "ML" }
+      ]
+    },
+    {
+      "name": "Teriyaki Chicken",
+      "ingredients": [
+        { "name": "chicken",    "amount": 200, "unit": "G"  },
+        { "name": "soy sauce",  "amount": 30,  "unit": "ML" },
+        { "name": "sugar",      "amount": 15,  "unit": "G"  },
+        { "name": "garlic",     "amount": 8,   "unit": "G"  },
+        { "name": "ginger",     "amount": 10,  "unit": "G"  },
+        { "name": "sesame seeds","amount": 5,  "unit": "G"  }
+      ]
+    },
+    {
+      "name": "Spicy Shrimp Noodles",
+      "ingredients": [
+        { "name": "noodles",    "amount": 120, "unit": "G"  },
+        { "name": "shrimp",     "amount": 100, "unit": "G"  },
+        { "name": "sriracha",   "amount": 15,  "unit": "ML" },
+        { "name": "garlic",     "amount": 10,  "unit": "G"  },
+        { "name": "oil",        "amount": 15,  "unit": "ML" },
+        { "name": "scallion",   "amount": 1,   "unit": "PCS" }
+      ]
+    },
+    {
+      "name": "Omelette",
+      "ingredients": [
+        { "name": "egg",        "amount": 3,   "unit": "PCS" },
+        { "name": "milk",       "amount": 30,  "unit": "ML" },
+        { "name": "bell pepper","amount": 50,  "unit": "G"  },
+        { "name": "onion",      "amount": 30,  "unit": "G"  },
+        { "name": "oil",        "amount": 10,  "unit": "ML" }
+      ]
+    },
+    {
+      "name": "Sweet Soy Pork",
+      "ingredients": [
+        { "name": "pork",       "amount": 250, "unit": "G"  },
+        { "name": "soy sauce",  "amount": 30,  "unit": "ML" },
+        { "name": "sugar",      "amount": 20,  "unit": "G"  },
+        { "name": "rice vinegar","amount": 15, "unit": "ML" },
+        { "name": "garlic",     "amount": 10,  "unit": "G"  }
+      ]
+    },
+    {
+      "name": "Tofu Veggie Bowl",
+      "ingredients": [
+        { "name": "tofu",       "amount": 150, "unit": "G"  },
+        { "name": "rice",       "amount": 120, "unit": "G"  },
+        { "name": "carrot",     "amount": 50,  "unit": "G"  },
+        { "name": "bok choy",   "amount": 80,  "unit": "G"  },
+        { "name": "soy sauce",  "amount": 15,  "unit": "ML" },
+        { "name": "sesame oil", "amount": 5,   "unit": "ML" }
       ]
     }
   ]

@@ -2,152 +2,152 @@
   "stock": [
     {
       "name": "soy sauce",
-      "amount": 250,
+      "amount": 50,
       "unit": "ML"
     },
     {
       "name": "sesame oil",
-      "amount": 60,
+      "amount": 10,
       "unit": "ML"
     },
     {
       "name": "rice vinegar",
-      "amount": 200,
+      "amount": 30,
       "unit": "ML"
     },
     {
       "name": "oyster sauce",
-      "amount": 150,
+      "amount": 0,
       "unit": "ML"
     },
     {
       "name": "hoisin sauce",
-      "amount": 150,
+      "amount": 0,
       "unit": "ML"
     },
     {
       "name": "chili oil",
-      "amount": 100,
+      "amount": 20,
       "unit": "ML"
     },
     {
       "name": "sriracha",
-      "amount": 120,
+      "amount": 0,
       "unit": "ML"
     },
     {
       "name": "oil",
-      "amount": 500,
+      "amount": 30,
       "unit": "ML"
     },
     {
       "name": "olive oil",
-      "amount": 200,
+      "amount": 15,
       "unit": "ML"
     },
     {
       "name": "rice",
-      "amount": 2000,
-      "unit": "G"
-    },
-    {
-      "name": "pasta",
-      "amount": 500,
-      "unit": "G"
-    },
-    {
-      "name": "noodles",
-      "amount": 400,
-      "unit": "G"
-    },
-    {
-      "name": "cornstarch",
       "amount": 200,
       "unit": "G"
     },
     {
+      "name": "pasta",
+      "amount": 0,
+      "unit": "G"
+    },
+    {
+      "name": "noodles",
+      "amount": 100,
+      "unit": "G"
+    },
+    {
+      "name": "cornstarch",
+      "amount": 30,
+      "unit": "G"
+    },
+    {
       "name": "sugar",
-      "amount": 300,
+      "amount": 50,
       "unit": "G"
     },
     {
       "name": "flour",
-      "amount": 500,
+      "amount": 0,
       "unit": "G"
     },
     {
       "name": "garlic",
-      "amount": 100,
+      "amount": 20,
       "unit": "G"
     },
     {
       "name": "ginger",
-      "amount": 150,
+      "amount": 15,
       "unit": "G"
     },
     {
       "name": "scallion",
-      "amount": 6,
+      "amount": 2,
       "unit": "PCS"
     },
     {
       "name": "broccoli",
-      "amount": 400,
+      "amount": 0,
       "unit": "G"
     },
     {
       "name": "bell pepper",
-      "amount": 300,
+      "amount": 0,
       "unit": "G"
     },
     {
       "name": "onion",
-      "amount": 400,
+      "amount": 50,
       "unit": "G"
     },
     {
       "name": "carrot",
-      "amount": 300,
+      "amount": 0,
       "unit": "G"
     },
     {
       "name": "bok choy",
-      "amount": 400,
+      "amount": 0,
       "unit": "G"
     },
     {
       "name": "chicken",
-      "amount": 800,
+      "amount": 150,
       "unit": "G"
     },
     {
       "name": "pork",
-      "amount": 600,
-      "unit": "G"
-    },
-    {
-      "name": "shrimp",
-      "amount": 400,
-      "unit": "G"
-    },
-    {
-      "name": "tofu",
-      "amount": 400,
-      "unit": "G"
-    },
-    {
-      "name": "egg",
-      "amount": 6,
-      "unit": "PCS"
-    },
-    {
-      "name": "sesame seeds",
       "amount": 100,
       "unit": "G"
     },
     {
+      "name": "shrimp",
+      "amount": 0,
+      "unit": "G"
+    },
+    {
+      "name": "tofu",
+      "amount": 100,
+      "unit": "G"
+    },
+    {
+      "name": "egg",
+      "amount": 2,
+      "unit": "PCS"
+    },
+    {
+      "name": "sesame seeds",
+      "amount": 10,
+      "unit": "G"
+    },
+    {
       "name": "milk",
-      "amount": 500,
+      "amount": 80,
       "unit": "ML"
     }
   ]
